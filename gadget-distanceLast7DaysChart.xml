@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Custom gadget" />
+  <Content type="html">
+  <![CDATA[
+  
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  
+  <style type="text/css">
+    html {
+      height: 100%
+    }
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0
+    }
+    #chart {
+      height: 100%
+    }
+  </style>  
+  
+  <script type="text/javascript">
+    google.load('visualization', '1',
+    {
+      packages: ['corechart']
+    });
+    google.setOnLoadCallback(drawChart);  
+
+    function drawChart()
+    {
+      $.getJSON("https://spreadsheets.google.com/feeds/list/1qarWvw5TcWsuzyWfX2qodoEAGelz-iAOijOhS5duzSM/od6/public/values?alt=json", function(ssdata)
+      {
+        var day1 = ssdata.feed.entry[0]['gsx$day1']['$t'];
+        var day2 = ssdata.feed.entry[0]['gsx$day2']['$t'];
+        var day3 = ssdata.feed.entry[0]['gsx$day3']['$t'];
+        var day4 = ssdata.feed.entry[0]['gsx$day4']['$t'];
+        var day5 = ssdata.feed.entry[0]['gsx$day5']['$t'];
+        var day6 = ssdata.feed.entry[0]['gsx$day6']['$t'];
+        var day7 = ssdata.feed.entry[0]['gsx$day7']['$t'];
+        
+        var distance7days = [day1, day2, day3, day4, day5, day6, day7];
+        
+        
+        
+        var data = new google.visualization.DataTable();
+
+        data.addColumn('number', 'Day');
+        data.addColumn('number', 'Distance [km]');
+
+        for (var i = 0; i < 7; i++)
+        {
+          data.addRow([i+1,parseFloat(distance7days[i])]);
+        }
+        
+        
+        var view = new google.visualization.DataView(data);
+      
+        view.setColumns([0, 1,
+                       { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation" }
+                       ]); 
+        
+        var chart = new google.visualization.ColumnChart($('#chart').get(0));
+
+        chart.draw(view,
+        {
+          hAxis:
+          {
+            textStyle:
+            {
+              color: '#192538',
+              fontSize: 16,
+              italic: false,
+              bold: false
+            },                       
+            gridlines:
+            {
+              count: 7,
+              color: 'white'              
+            }
+          },
+          vAxis:
+          {
+            textStyle:
+            {
+              color: '#192538',
+              fontSize: 16,
+              italic: false,
+              bold: false
+            },            
+            viewWindowMode: 'maximized',
+            gridlines:
+            {
+              count: 7,
+            },
+            maxValue: 12,
+            minValue: 0,
+          },
+          chartArea:
+          {
+            left: '10%',
+            top: '5%',
+            width: '90%',
+            height: '90%'
+          },
+          legend:
+          {
+            position: 'none'
+          },
+          bar:
+          {
+            groupWidth: '70%'
+          },
+          annotations: 
+          {
+            textStyle: 
+            {
+              fontSize: 18,
+              bold: true,
+              opacity: 0.7          // The transparency of the text.
+            }
+          },
+          height: 300,
+          width: 500,
+          colors: ['#192538']
+        });  
+      }); // end getJSON      
+    }
+  </script>
+</head>
+
+<body>
+  <div id="chart" style="width: 100%;"></div>
+</body>
+
+</html>
+  ]]>
+ </Content>
+</Module>
